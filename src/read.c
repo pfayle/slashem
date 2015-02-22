@@ -1312,6 +1312,9 @@ register struct obj	*sobj;
 		if (sobj->blessed) do_class_genocide();
 		else do_genocide(!sobj->cursed | (2 * !!Confusion));
 		break;
+	case SCR_GENOCIDE_LITTLE_DOG:
+		do_genocide(!sobj->cursed | (2 * !!Confusion) | 8);
+		break;
 	case SCR_LIGHT:
 		if(!Blind) known = TRUE;
 		litroom(!confused && !sobj->cursed, sobj);
@@ -1930,6 +1933,7 @@ int how;
 /* 1 = normal genocide */
 /* 3 = forced genocide of player */
 /* 5 (4 | 1) = normal genocide from throne */
+/* 8 = forced genocide of little dogs */
 {
 	char buf[BUFSZ];
 	register int	i, killplayer = 0;
@@ -1948,8 +1952,13 @@ int how;
 		    pline(thats_enough_tries);
 		    return;
 		}
-		getlin("What monster do you want to genocide? [type the name]",
-			buf);
+		if (how & 8) {
+			//buf = "little dog";
+			Strcpy(buf, "little dog");
+		} else {
+			getlin("What monster do you want to genocide? [type the name]",
+				buf);
+		}
 		(void)mungspaces(buf);
 		/* choosing "none" preserves genocideless conduct */
 		if (!strcmpi(buf, "none") || !strcmpi(buf, "nothing")) {
@@ -1963,7 +1972,7 @@ int how;
 		}
 
 		mndx = name_to_mon(buf);
-		if (mndx == NON_PM || (mvitals[mndx].mvflags & G_GENOD)) {
+		if ((mndx == NON_PM || (mvitals[mndx].mvflags & G_GENOD)) && !(how & 8)) {
 			pline("Such creatures %s exist in this world.",
 			      (mndx == NON_PM) ? "do not" : "no longer");
 			continue;

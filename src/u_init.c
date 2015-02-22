@@ -1613,6 +1613,8 @@ register struct trobj *trop;
 			    obj->spe = trop->trspe;
 			if (trop->trbless != UNDEF_BLESS)
 			    obj->blessed = trop->trbless;
+			if (trop->trotyp == SCR_GENOCIDE_LITTLE_DOG)
+			    obj->cursed = 1;
 #ifdef GOLDOBJ
 		}
 #endif
